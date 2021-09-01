@@ -4,10 +4,13 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const {authRoutes} = require('./src/routes');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
+
+app.use('/api/auth', authRoutes);
 
 const DB_URL = process.env.DB_URL;
 const PORT = process.env.PORT || 8080;
