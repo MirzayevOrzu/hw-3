@@ -22,6 +22,9 @@ const userSchema = new Schema({
     default: new Date().toISOString(),
     required: true,
   },
+},
+{
+  versionKey: false,
 });
 
 module.exports = mongoose.model('User', userSchema);
