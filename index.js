@@ -4,13 +4,15 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const {authRoutes} = require('./src/routes');
+const {authRoutes, userRoutes, truckRoutes} = require('./src/routes');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/trucks', truckRoutes);
 
 app.use((err, req, res, next) => {
   const {statusCode = 500} = err;
@@ -22,7 +24,7 @@ app.use((err, req, res, next) => {
 
 const DB_URL = process.env.DB_URL;
 const PORT = process.env.PORT || 8080;
-mongoose.connect(DB_URL, (err) => {
+mongoose.connect(DB_URL, {useNewUrlParser: true}, (err) => {
   if (err) {
     console.log('Database connection error');
   } else {
