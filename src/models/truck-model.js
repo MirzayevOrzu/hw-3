@@ -8,14 +8,13 @@ const truckSchema = new Schema({
     required: true,
   },
   assigned_to: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+    type: String,
+    default: '',
   },
   type: {
     type: String,
     required: true,
-    enum: ['S0PRINTER', 'SMALL STRAIGHT', 'LARGE STRAIGHT'],
+    enum: ['SPRINTER', 'SMALL STRAIGHT', 'LARGE STRAIGHT'],
   },
   status: {
     type: String,
@@ -27,6 +26,9 @@ const truckSchema = new Schema({
     default: new Date().toISOString(),
     required: true,
   },
+},
+{
+  versionKey: false,
 });
 
 module.exports = mongoose.model('Truck', truckSchema);
