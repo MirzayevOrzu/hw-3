@@ -12,6 +12,14 @@ app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
 
+app.use((err, req, res, next) => {
+  const {statusCode = 500} = err;
+  if (!err.message) err.message = 'Server error';
+  res.status(statusCode).json({
+    message: err.message,
+  });
+});
+
 const DB_URL = process.env.DB_URL;
 const PORT = process.env.PORT || 8080;
 mongoose.connect(DB_URL, (err) => {
