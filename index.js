@@ -4,15 +4,21 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const {authRoutes, userRoutes, truckRoutes} = require('./src/routes');
+const {
+  authRoutes,
+  userRoutes,
+  truckRoutes,
+  laodRoutes,
+} = require('./src/routes');
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/trucks', truckRoutes);
+app.use('/api/loads', laodRoutes);
 
 app.use((err, req, res, next) => {
   const {statusCode = 500} = err;
