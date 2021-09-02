@@ -4,6 +4,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 const {
   authRoutes,
   userRoutes,
@@ -11,6 +12,7 @@ const {
   laodRoutes,
 } = require('./src/routes');
 
+app.use(cors());
 app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
