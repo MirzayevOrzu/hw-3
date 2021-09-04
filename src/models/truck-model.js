@@ -21,7 +21,7 @@ const truckSchema = new Schema({
     enum: ['OL', 'IS', null],
     default: null,
   },
-  createdDate: {
+  created_date: {
     type: Date,
     default: new Date().toISOString(),
     required: true,
