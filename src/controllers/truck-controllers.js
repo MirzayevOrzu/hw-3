@@ -66,7 +66,11 @@ module.exports.updateTruck = async (req, res, next) => {
   const {type} = req.body;
 
   const truck = await Truck.findOneAndUpdate(
-      {_id: truckId, created_by: id},
+      {
+        _id: truckId,
+        created_by: id,
+        assigned_to: null,
+      },
       {type},
   );
 
