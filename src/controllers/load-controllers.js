@@ -177,11 +177,18 @@ module.exports.postLoad = async (req, res, next) => {
       load.assigned_to = truck.created_by;
       load.truck = truck._id;
       load.status = 'ASSIGNED';
+      load.state = 'En route to Pick Up';
+      load.logs.push(
+          {
+            message: `Load assigned to driver with id ${truck.created_by}`,
+            time: new Date().toISOString(),
+          },
+          {
+            message: 'Load state changed to "En route to Pick Up"',
+            time: new Date().toISOString(),
+          },
+      );
       truck.status = 'OL';
-      load.logs.push({
-        message: `Load assigned to driver with id ${truck.created_by}`,
-        time: new Date().toISOString(),
-      });
       await truck.save();
       await load.save();
       return res.status(200).json({
@@ -190,6 +197,12 @@ module.exports.postLoad = async (req, res, next) => {
       });
     }
   }
+
+  load.logs.push({
+    message: 'Load posted, but driver not found',
+    time: new Date().toISOString(),
+  });
+  await load.save();
   next(new ExpressError('Available drivers not found', 500));
 };
 
