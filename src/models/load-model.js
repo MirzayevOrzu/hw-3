@@ -9,7 +9,6 @@ const messageSchema = new Schema({
   time: {
     type: Date,
     required: true,
-    default: new Date().toISOString(),
   },
 }, {_id: false});
 
@@ -81,7 +80,6 @@ const loadSchema = new Schema({
   created_date: {
     type: Date,
     required: true,
-    default: new Date().toISOString(),
   },
 },
 {
