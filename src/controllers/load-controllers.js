@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 const {Load, Truck} = require('../models');
+const TruckO = require('../oop/truck');
 const {ExpressError} = require('../utils');
 
 module.exports.addLoad = async (req, res, next) => {
@@ -20,6 +21,7 @@ module.exports.addLoad = async (req, res, next) => {
     pickup_address,
     delivery_address,
     dimensions,
+    created_date: new Date().toISOString(),
   });
   await load.save();
 
@@ -164,32 +166,29 @@ module.exports.postLoad = async (req, res, next) => {
     return next(new ExpressError(`No load found with "_id" of ${loadId}`));
   }
 
-  const trucks = await Truck.find({assigned_to: null});
-  loop:
-  for (let i = 0; i < trucks.length; i++) {
-    const truck = trucks[i];
-    console.log(i);
-    const {created_by} = truck;
-    const assignedTruck = await Truck
-        .findOne({created_by, assigned_to: created_by});
+  const trucks = await Truck.find({assigned_to: {$ne: null}, status: 'IS'});
 
-    if (assignedTruck) continue loop;
+  for (const truck of trucks) {
+    const {payload, dimensions: {length, width, height}} = load;
+    const truckChar = new TruckO(truck.type);
 
-    truck.assigned_to = created_by;
-    load.assigned_to = created_by;
-    load.truck = truck._id;
-    load.logs.push({
-      message: `Load assigned to driver with id ${created_by}`,
-      time: new Date().toISOString(),
-    });
-
-    await truck.save();
-    await load.save();
-
-    return res.status(200).json({
-      message: 'Load posted successfully',
-      driver_found: true,
-    });
+    const acceptable = truckChar.acceptableLoad(length, width, height, payload);
+    if (acceptable) {
+      load.assigned_to = truck.created_by;
+      load.truck = truck._id;
+      load.status = 'ASSIGNED';
+      truck.status = 'OL';
+      load.logs.push({
+        message: `Load assigned to driver with id ${truck.created_by}`,
+        time: new Date().toISOString(),
+      });
+      await truck.save();
+      await load.save();
+      return res.status(200).json({
+        message: 'Load posted successfully',
+        driver_found: true,
+      });
+    }
   }
   next(new ExpressError('Available drivers not found', 500));
 };
