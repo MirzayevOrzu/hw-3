@@ -54,7 +54,7 @@ module.exports.getActiveLoad = async (req, res, next) => {
   const {id} = req.user;
 
   const load = await Load
-      .findOne({assigned_to: id})
+      .findOne({assigned_to: id, status: {$ne: 'SHIPPED'}})
       .select('-truck')
       .lean();
 
