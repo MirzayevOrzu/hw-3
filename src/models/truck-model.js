@@ -23,7 +23,6 @@ const truckSchema = new Schema({
   },
   created_date: {
     type: Date,
-    default: new Date().toISOString(),
     required: true,
   },
 },
