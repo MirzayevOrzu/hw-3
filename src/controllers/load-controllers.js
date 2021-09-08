@@ -186,17 +186,10 @@ module.exports.postLoad = async (req, res, next) => {
       load.assigned_to = truck.created_by;
       load.truck = truck._id;
       load.status = 'ASSIGNED';
-      load.state = 'En route to Pick Up';
-      load.logs.push(
-          {
-            message: `Load assigned to driver with id ${truck.created_by}`,
-            time: new Date().toISOString(),
-          },
-          {
-            message: 'Load state changed to "En route to Pick Up"',
-            time: new Date().toISOString(),
-          },
-      );
+      load.logs.push({
+        message: `Load assigned to driver with id ${truck.created_by}`,
+        time: new Date().toISOString(),
+      });
       truck.status = 'OL';
       await truck.save();
       await load.save();
