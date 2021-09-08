@@ -76,7 +76,7 @@ module.exports.iterateLoadState = async (req, res, next) => {
     'Arrived to delivery',
   ];
 
-  const load = await Load.findOne({assigned_to: id});
+  const load = await Load.findOne({assigned_to: id, status: {$ne: 'SHIPPED'}});
   if (!load) {
     return next(new ExpressError('No active load found'));
   }
