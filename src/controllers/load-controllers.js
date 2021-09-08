@@ -82,17 +82,26 @@ module.exports.iterateLoadState = async (req, res, next) => {
   }
 
   const index = states.indexOf(load.state);
-  if (index === -1) {
-    return next(new ExpressError('Load state not found', 400));
-  } else if (index === 3) {
+  if (index === 3) {
     return next(new ExpressError('Load is in final state already', 400));
   }
 
   load.state = states[index + 1];
   load.logs.push({
-    message: states[index + 1],
+    message: `Load state changed to "${states[index + 1]}"`,
     time: new Date().toISOString(),
   });
+  if (index === 2) {
+    load.status = 'SHIPPED';
+    load.logs.push({
+      message: 'Load shipped successfully',
+      time: new Date().toISOString(),
+    });
+    await Truck.findByIdAndUpdate(
+        load.truck,
+        {status: 'IS', assigned_to: null},
+    );
+  }
   await load.save();
 
   res.status(200).json({
