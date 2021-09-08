@@ -10,6 +10,7 @@ module.exports.addTruck = async (req, res, next) => {
     assigned_to: null,
     type,
     status: 'IS',
+    created_date: new Date().toISOString(),
   });
   await truck.save();
 
