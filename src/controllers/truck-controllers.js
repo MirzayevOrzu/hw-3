@@ -70,13 +70,16 @@ module.exports.updateTruck = async (req, res, next) => {
       {
         _id: truckId,
         created_by: id,
-        assigned_to: null,
       },
       {type},
   );
 
   if (!truck) {
     return next(new ExpressError(`No truck found with "_id" of ${truckId}`));
+  } else if (truck.assigned_to) {
+    return next(
+        new ExpressError('Cannot update truck while it is assigned', 400),
+    );
   }
 
   res.status(200).json({
@@ -88,7 +91,8 @@ module.exports.deleteTruck = async (req, res, next) => {
   const {id} = req.user;
   const {truckId} = req.params;
 
-  await Truck.findOneAndRemove({_id: truckId, created_by: id});
+  await Truck
+      .findOneAndRemove({_id: truckId, created_by: id, assigned_to: null});
 
   res.status(200).json({
     message: 'Truck deleted successfully',
