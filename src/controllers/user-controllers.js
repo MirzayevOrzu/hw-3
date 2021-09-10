@@ -7,6 +7,10 @@ module.exports.getProfileInfo = async (req, res, next) => {
 
   const user = await User.findById(id);
 
+  if (!user) {
+    return next(new ExpressError('User not found', 400));
+  }
+
   res.status(200).json({
     user: {
       _id: id,
