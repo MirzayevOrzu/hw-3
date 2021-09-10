@@ -35,6 +35,7 @@ const loadSchema = new Schema({
       'Arrived to Pick Up',
       'En route to delivery',
       'Arrived to delivery',
+      null,
     ],
     default: null,
   },
