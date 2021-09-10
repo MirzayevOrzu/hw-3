@@ -91,6 +91,15 @@ module.exports.deleteTruck = async (req, res, next) => {
   const {id} = req.user;
   const {truckId} = req.params;
 
+  const truck = await Truck
+      .findOne({_id: truckId, created_by: id, assigned_to: null});
+
+  if (!truck) {
+    return next(
+        new ExpressError(`No truck found with id of ${truckId}`, 400),
+    );
+  }
+
   await Truck
       .findOneAndRemove({_id: truckId, created_by: id, assigned_to: null});
 
