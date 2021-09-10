@@ -136,8 +136,13 @@ module.exports.updateLoad = async (req, res, next) => {
     dimensions,
   } = req.body;
 
-  Load.findOneAndUpdate(
-      {created_by: id, _id: loadId},
+  const load = await Load
+      .findOne({created_by: id, _id: loadId}).lean();
+  if (load.status !== 'NEW') {
+    return next(new ExpressError(`Load ${loadId} is not NEW state`));
+  }
+
+  Load.findOneAndUpdate({created_by: id, _id: loadId},
       {
         name,
         payload,
@@ -146,7 +151,10 @@ module.exports.updateLoad = async (req, res, next) => {
         dimensions,
       },
       (err) => {
-        if (err) return next(new ExpressError('Datatbase error', 500));
+        if (err) {
+          return next(new ExpressError('Database Error', 500));
+        }
+
         res.status(200).json({
           message: 'Load details changed successfully',
         });
@@ -157,6 +165,11 @@ module.exports.updateLoad = async (req, res, next) => {
 module.exports.deleteLoad = async (req, res, next) => {
   const {id} = req.user;
   const {loadId} = req.params;
+
+  const load = await Load.findOne({_id: loadId, created_by: id});
+  if (load.status !== 'NEW') {
+    return next(new ExpressError(`Load ${loadId} is not NEW state`));
+  }
 
   await Load.findOneAndRemove({_id: loadId, created_by: id});
 
