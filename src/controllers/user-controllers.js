@@ -1,4 +1,4 @@
-const {User} = require('../models');
+const {User, Load, Truck} = require('../models');
 const bcrypt = require('bcrypt');
 const {ExpressError} = require('../utils/');
 
@@ -55,6 +55,8 @@ module.exports.deleteProfile = async (req, res, next) => {
     if (load) {
       return next(new ExpressError('You have active load, cannot delete', 400));
     }
+
+    await Load.deleteMany({created_by: user._id});
   } else {
     const load = await Load
         .findOne({assigned_to: user._id, status: {$ne: 'SHIPPED'}})
@@ -64,6 +66,7 @@ module.exports.deleteProfile = async (req, res, next) => {
     if (load) {
       return next(new ExpressError('Active load found, cannot delete', 400));
     }
+    await Truck.deleteMany({created_by: user._id});
   }
 
   await User.findByIdAndRemove(id);
