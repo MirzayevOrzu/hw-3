@@ -46,9 +46,13 @@ module.exports.deleteProfile = async (req, res, next) => {
 
   const user = await User.findById(id);
 
-  if (user.role === 'shipper') {
+  if (user.role === 'SHIPPER') {
     const load = await Load
-        .findOne({assigned_to: {$ne: null}, created_by: user._id})
+        .findOne({
+          assigned_to: {$ne: null},
+          created_by: user._id,
+          status: {$ne: 'SHIPPED'},
+        })
         .select('-truck')
         .lean();
 
